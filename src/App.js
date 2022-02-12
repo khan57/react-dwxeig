@@ -8,16 +8,38 @@ export default function App() {
   const [channelType, setChannelType] = useState('');
   const [users, setUsers] = useState([]);
   const [members, setMembers] = useState('');
-
+  const [token, setToken] = useState(
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjIwNzY2ZjdhOWE0MTgyNTEzZjJiMGNiIiwiaWF0IjoxNjQ0NjUzNjg3fQ.IEBgh0VLQZG1aoThRyjPCHe98G5Ebxb7mT-ioQe8LEU'
+  );
+  const [userTokens, setUserTokens] = useState([
+    {
+      token:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjIwNzY2ZjdhOWE0MTgyNTEzZjJiMGNiIiwiaWF0IjoxNjQ0NjUzNjg3fQ.IEBgh0VLQZG1aoThRyjPCHe98G5Ebxb7mT-ioQe8LEU',
+      user: 'Haseeb',
+    },
+    {
+      token:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjIwNzY2ZjdhOWE0MTgyNTEzZjJiMGNiIiwiaWF0IjoxNjQ0NjUzNjg3fQ.IEBgh0VLQZG1aoThRyjPCHe98G5Ebxb7mT-ioQe8LEU',
+      user: 'Wajahat',
+    },
+    {
+      token:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjIwNzY3MTdkNjEzNjhiZmE5NWZkZTI0IiwiaWF0IjoxNjQ0NjUzNzY4fQ.j5O40ncKSq8li1t0UTxoh5i-kux2SyQaw63d6Ukq7_o',
+      user: 'Sudais',
+    },
+    {
+      token:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjIwNzY3MWUyNjZkNjI4ZTQyOTMwNTU5IiwiaWF0IjoxNjQ0NjUzODAwfQ.1R2KDp5N-BeYf1XiKn5hAP_sokTFJm12U8LSWxX7B7s',
+      user: 'Taib',
+    },
+  ]);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [messages, setMessages] = useState([]);
-  const getMyChats = () => {
+  const getMyChats = (loggedInUser) => {
+    let _token = loggedInUser ? loggedInUser : token;
     var myHeaders = new Headers();
-    myHeaders.append(
-      'Authorization',
-      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjIwNzY2ZjdhOWE0MTgyNTEzZjJiMGNiIiwiaWF0IjoxNjQ0NjUzNjg3fQ.IEBgh0VLQZG1aoThRyjPCHe98G5Ebxb7mT-ioQe8LEU'
-    );
+    myHeaders.append('Authorization', `Bearer ${_token}`);
 
     var requestOptions = {
       method: 'GET',
@@ -56,7 +78,7 @@ export default function App() {
     var raw = JSON.stringify({
       channel_name: channelName,
       channel_type: channelType,
-      members: members,
+      members: [members],
     });
 
     var requestOptions = {
@@ -165,6 +187,23 @@ export default function App() {
   return (
     <div style={{ padding: 3 }}>
       {show && <MyModal />}
+      <div style={{ marginBottom: 5 }}>
+        <Form.Group>
+          <Form.Label htmlFor="inputPassword5">Login As : </Form.Label>
+          <Form.Select
+            size="sm"
+            onChange={(e) => {
+              getMyChats(e.target.value);
+              setToken(e.target.value);
+            }}
+            value={token}
+          >
+            {userTokens.map((currentToken) => (
+              <option value={currentToken.token}>{currentToken.user}</option>
+            ))}
+          </Form.Select>
+        </Form.Group>
+      </div>
       <div className="container" style={{ marginBottom: 5 }}>
         <Button variant="outline-primary">+ private message</Button>
         <Button variant="outline-dark" onClick={handleShow}>
