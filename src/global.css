@@ -1,0 +1,11 @@
+.container {
+  display: flex;
+
+  align-items: center;
+}
+
+.message-body {
+  flex-grow: 7;
+  background-color: wheat;
+  align-items: center;
+}
