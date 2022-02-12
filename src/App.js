@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import './global.css';
-
+import { Button, Modal, Form } from 'react-bootstrap';
 export default function App() {
   const [chats, setChats] = useState([]);
+  const [show, setShow] = useState(false);
+  const [channelName, setChannelName] = useState('');
+  const [channelType, setChannelType] = useState('');
+
+  const handleClose = () => setShow(false);
+  const handleShow = () => setShow(true);
   const getMyChats = () => {
     var myHeaders = new Headers();
     myHeaders.append(
@@ -24,20 +30,53 @@ export default function App() {
       })
       .catch((error) => console.log('error', error));
   };
-
+  const MyModal = () => {
+    return (
+      <>
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Add Channel</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form.Select aria-label="Default select example">
+              <option>Select channel type</option>
+              <option value="1">User</option>
+              <option value="2">Professional</option>
+            </Form.Select>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Close
+            </Button>
+            <Button variant="primary" onClick={handleClose}>
+              Save Changes
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
+  };
   useEffect(() => {
     getMyChats();
   }, []);
+
   return (
-    <div className="app">
+    <div style={{ padding: 3 }}>
+      <div className="container" style={{ marginBottom: 5 }}>
+        <Button variant="outline-primary">+ private message</Button>
+        <Button variant="outline-primary" onClick={handleShow}>
+          + Channel
+        </Button>
+      </div>
       <div className="container">
         <div style={{ flexGrow: 1 }}>
           {chats.map((chat) => (
             <div style={{ marginBottom: 4 }}>{chat.channel_name}</div>
           ))}
         </div>
-        <div className="message-body">sakdjas</div>
+        <div className="message-body">no message</div>
       </div>
+      <MyModal />
     </div>
   );
 }
