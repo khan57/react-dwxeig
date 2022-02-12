@@ -6,6 +6,8 @@ export default function App() {
   const [show, setShow] = useState(false);
   const [channelName, setChannelName] = useState('');
   const [channelType, setChannelType] = useState('');
+  const [users, setUsers] = useState([]);
+  const [members, setMembers] = useState('');
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -29,6 +31,44 @@ export default function App() {
         console.log(result.data);
         setChats(result.data);
       })
+      .catch((error) => console.log('error', error));
+  };
+
+  const getUsers = () => {
+    var requestOptions = {
+      method: 'GET',
+      redirect: 'follow',
+    };
+
+    fetch('http://localhost:3000/api/v1/user', requestOptions)
+      .then((response) => response.json())
+      .then((result) => setUsers(result.data))
+      .catch((error) => console.log('error', error));
+  };
+  const createChat = () => {
+    var myHeaders = new Headers();
+    myHeaders.append(
+      'Authorization',
+      'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjoiNjIwNzY3MTdkNjEzNjhiZmE5NWZkZTI0IiwiaWF0IjoxNjQ0NjUzNzY4fQ.j5O40ncKSq8li1t0UTxoh5i-kux2SyQaw63d6Ukq7_o'
+    );
+    myHeaders.append('Content-Type', 'application/json');
+
+    var raw = JSON.stringify({
+      channel_name: channelName,
+      channel_type: channelType,
+      members: members,
+    });
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow',
+    };
+
+    fetch('http://localhost:3000/api/v1/conversation', requestOptions)
+      .then((response) => response.json())
+      .then((result) => alert(result.response))
       .catch((error) => console.log('error', error));
   };
   const MyModal = () => {
@@ -64,13 +104,35 @@ export default function App() {
               Channel name must be atleat one character
             </Form.Text>
           </Form.Group>
+
+          <Form.Group>
+            <Form.Label htmlFor="inputPassword5">Members</Form.Label>
+
+            <Form.Select
+              size="sm"
+              onChange={(e) => setMembers([e.target.value])}
+              value={members}
+            >
+              <option>Select members</option>
+
+              {users.map((user) => (
+                <option value={user._id}>{user.email}</option>
+              ))}
+            </Form.Select>
+          </Form.Group>
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Save Changes
+          <Button
+            variant="primary"
+            onClick={() => {
+              createChat();
+              handleClose();
+            }}
+          >
+            Create Channel
           </Button>
         </Modal.Footer>
       </Modal>
@@ -97,6 +159,7 @@ export default function App() {
   };
   useEffect(() => {
     getMyChats();
+    getUsers();
   }, []);
 
   return (
