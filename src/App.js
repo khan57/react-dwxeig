@@ -195,6 +195,7 @@ export default function App() {
             onChange={(e) => {
               getMyChats(e.target.value);
               setToken(e.target.value);
+              setMessages([]);
             }}
             value={token}
           >
